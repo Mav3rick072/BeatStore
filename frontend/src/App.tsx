@@ -1,22 +1,42 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
+import { LoginForm } from './features/auth/LoginForm';
+import { authService } from './features/auth/auth.service';
+import type { Usuario } from './types/auth.types';
 
-export default function App() {
+export const App: React.FC = () => {
+  const [user, setUser] = useState<Usuario | null>(() => authService.getStoredUser());
+
+  const handleLoginSuccess = () => {
+    setUser(authService.getStoredUser());
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    setUser(null);
+  };
+
+  if (!user) {
+    return <LoginForm onSuccess={handleLoginSuccess} />;
+  }
+
   return (
-    <div className="container my-5">
-      <div className="card shadow-sm border-0">
-        <div className="card-body text-center p-5">
-          <i className="bi bi-music-note-beamed text-primary display-1 mb-3"></i>
-          <h1 className="fw-bold text-dark mb-2">BeatStore POS</h1>
-          <p className="text-muted mb-4">
-            Sistema de Punto de Venta y Gestión de Inventarios
-          </p>
-          <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fs-6">
-            <i className="bi bi-check-circle-fill me-2"></i>
-            Entorno Frontend Configurado Exitosamente
-          </span>
+    <div className="min-vh-100 bg-light">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+        <span className="navbar-brand fw-bold">BeatStore POS</span>
+        <div className="ms-auto d-flex align-items-center gap-3 text-white">
+          <span>Hola, <strong>{user.nombre}</strong> ({user.rol})</span>
+          <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+            Cerrar Sesión
+          </button>
         </div>
-      </div>
+      </nav>
+
+      <main className="container py-5 text-center">
+        <h1 className="fw-bold mb-3">¡Bienvenida al Panel Principal!</h1>
+        <p className="text-muted fs-5">Has iniciado sesión correctamente utilizando datos simulados.</p>
+      </main>
     </div>
   );
-}
+};
 
+export default App;

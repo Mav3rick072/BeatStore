@@ -7,25 +7,24 @@ const apiClient = axios.create({
   },
 });
 
-// Interceptor para adjuntar el token de autenticación
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token && config.headers) {
-      config.headers.Authorization = \Bearer \\;
+    if (token) {
+      config.headers.Authorization = 'Bearer ' + token;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Interceptor para manejo unificado de errores HTTP
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Sesión expirada o no autorizada
+    if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
