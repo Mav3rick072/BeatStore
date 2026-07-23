@@ -64,6 +64,13 @@ export const SalesView: React.FC = () => {
                 <div className="col-md-6" key={product.id}>
                   <div className="card h-100 border shadow-none p-3 d-flex flex-column justify-content-between">
                     <div>
+                      {/* Imagen del producto */}
+                      <img 
+                        src={product.imagen} 
+                        alt={product.nombre} 
+                        className="rounded mb-3 w-100 object-fit-cover" 
+                        style={{ height: '140px' }}
+                      />
                       <span className="badge bg-secondary mb-2">{product.categoria}</span>
                       <h5 className="card-title fs-6 fw-bold">{product.nombre}</h5>
                       <p className="text-success fw-bold mb-1">${product.precio.toFixed(2)}</p>
