@@ -1,0 +1,74 @@
+# ===========================
+# Build
+# ===========================
+dist/
+build/
+coverage/
+.nyc_output/
+
+# ===========================
+# Dependencies
+# ===========================
+node_modules/
+**/node_modules/
+
+# ===========================
+# Environment
+# ===========================
+.env
+.env.*
+!.env.example
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ===========================
+# Runtime
+# ===========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ===========================
+# Temporary files
+# ===========================
+.temp/
+.tmp/
+
+# ===========================
+# Operating System
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# IDEs
+# ===========================
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ===========================
+# Diagnostic reports
+# ===========================
+report.*.json
