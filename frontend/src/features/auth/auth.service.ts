@@ -1,42 +1,31 @@
-﻿import type { AuthResponse, LoginCredentials, Usuario } from '../../types/auth.types';
+import apiClient from '../../api/axios.client';
+import type { AuthUser, LoginCredentials, LoginResponse } from '../../types/auth.types';
+
+const TOKEN_KEY = 'beatstore_token';
+const USER_KEY = 'beatstore_user';
 
 export const authService = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    if (credentials.usuario.toLowerCase() === 'admin' && credentials.password_hash === '123456') {
-      const mockUser: Usuario = {
-        id: 1,
-        nombre: 'Daphne (Administrador)',
-        usuario: 'admin',
-        rol: 'ADMIN',
-      };
-
-      return {
-        token: 'mock-jwt-token-123456789',
-        usuario: mockUser,
-      };
-    }
-
-    throw {
-      response: {
-        data: {
-          message: 'Credenciales incorrectas. Usa admin / 123456',
-        },
-      },
-    };
+  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    const { data } = await apiClient.post<LoginResponse>('/auth/login', credentials);
+    localStorage.setItem(TOKEN_KEY, data.accessToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    return data;
   },
 
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  logout(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   },
 
-  getStoredUser: (): Usuario | null => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  },
+
+  getStoredUser(): AuthUser | null {
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) return null;
     try {
-      return JSON.parse(userStr);
+      return JSON.parse(raw) as AuthUser;
     } catch {
       return null;
     }

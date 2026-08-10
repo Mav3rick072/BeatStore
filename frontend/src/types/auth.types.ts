@@ -1,16 +1,23 @@
+export type UserRole = 'ADMIN' | 'MANAGER' | 'CASHIER' | 'WAREHOUSE';
+
+export interface AuthUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  status: string;
+  employeeNumber?: string;
+  phone?: string;
+}
+
 export interface LoginCredentials {
-  usuario: string;
-  password_hash: string;
+  email: string;
+  password: string;
 }
 
-export interface Usuario {
-  id: number;
-  nombre: string;
-  usuario: string;
-  rol: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  usuario: Usuario;
+export interface LoginResponse {
+  accessToken: string;
+  expiresIn: number;
+  user: AuthUser;
 }

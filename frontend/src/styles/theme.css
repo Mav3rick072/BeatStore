@@ -1,0 +1,241 @@
+/*
+  Paleta BeatStore v2 — moderna, sobria, inspirada en instrumentos musicales:
+  azul pizarra profundo (carcasa de amplificador / escenario nocturno)
+  + cobre apagado (latón de instrumentos de viento, madera pulida).
+  Sin amarillos ni tonos brillantes/saturados.
+*/
+:root {
+  --bs-body-bg: #f4f2ee;
+  --bs-body-color: #232838;
+
+  --beat-primary: #22314a;
+  --beat-primary-dark: #141d2e;
+  --beat-primary-light: #445a7c;
+  --beat-accent: #b5644a;
+  --beat-accent-dark: #8f4d38;
+  --beat-sidebar: #141824;
+  --beat-sidebar-hover: #232a3d;
+  --beat-bg: #f4f2ee;
+  --beat-surface: #ffffff;
+  --beat-border: #e3ded4;
+  --beat-text-muted: #6b6f76;
+  --beat-success: #3e7a57;
+  --beat-danger: #b0453f;
+  --beat-info: #3d7ea6;
+
+  --bs-primary: #22314a;
+  --bs-primary-rgb: 34, 49, 74;
+  --bs-secondary: #b5644a;
+  --bs-secondary-rgb: 181, 100, 74;
+  --bs-success: #3e7a57;
+  --bs-success-rgb: 62, 122, 87;
+  --bs-danger: #b0453f;
+  --bs-danger-rgb: 176, 69, 63;
+  --bs-info: #3d7ea6;
+  --bs-info-rgb: 61, 126, 166;
+  --bs-warning: #b5644a;
+  --bs-warning-rgb: 181, 100, 74;
+  --bs-link-color: #22314a;
+  --bs-link-hover-color: #141d2e;
+}
+
+body {
+  background-color: var(--beat-bg);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* --- Botones y acentos --------------------------------------------- */
+.btn-primary {
+  background-color: var(--beat-primary);
+  border-color: var(--beat-primary);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--beat-primary-dark) !important;
+  border-color: var(--beat-primary-dark) !important;
+}
+.btn-outline-primary {
+  color: var(--beat-primary);
+  border-color: var(--beat-primary);
+}
+.btn-outline-primary:hover {
+  background-color: var(--beat-primary);
+  border-color: var(--beat-primary);
+}
+.btn-accent {
+  background-color: var(--beat-accent);
+  border-color: var(--beat-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+.btn-accent:hover {
+  background-color: var(--beat-accent-dark);
+  border-color: var(--beat-accent-dark);
+  color: #ffffff;
+}
+
+.text-primary { color: var(--beat-primary) !important; }
+.text-accent { color: var(--beat-accent-dark) !important; }
+.bg-primary { background-color: var(--beat-primary) !important; }
+.bg-accent { background-color: var(--beat-accent) !important; }
+
+.badge.bg-primary { background-color: var(--beat-primary) !important; }
+.badge.bg-secondary { background-color: var(--beat-text-muted) !important; }
+.badge.bg-accent { background-color: var(--beat-accent) !important; color: #ffffff; }
+
+a { color: var(--beat-primary); }
+
+/* --- Layout general -------------------------------------------------- */
+.beat-shell {
+  min-height: 100vh;
+  display: flex;
+}
+
+.beat-sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: linear-gradient(180deg, var(--beat-sidebar) 0%, #0c0f17 100%);
+  color: #d8dae2;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.beat-sidebar .brand {
+  padding: 1.5rem 1.25rem 1rem;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+}
+.beat-sidebar .brand .accent { color: var(--beat-accent); }
+
+.beat-sidebar nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0.75rem;
+}
+
+.beat-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  color: #aeb2c0;
+  text-decoration: none;
+  font-size: 0.92rem;
+  margin-bottom: 0.15rem;
+  transition: background-color 0.15s ease;
+}
+.beat-nav-link:hover {
+  background: var(--beat-sidebar-hover);
+  color: #fff;
+}
+.beat-nav-link.active {
+  background: var(--beat-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+.beat-nav-section {
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: #676c80;
+  padding: 0.9rem 0.85rem 0.25rem;
+}
+
+.beat-sidebar-footer {
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.beat-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.beat-topbar {
+  background: var(--beat-surface);
+  border-bottom: 1px solid var(--beat-border);
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.beat-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* --- Tarjetas ---------------------------------------------------------- */
+.beat-card {
+  background: var(--beat-surface);
+  border: 1px solid var(--beat-border);
+  border-radius: 0.9rem;
+  box-shadow: 0 2px 10px rgba(20, 29, 46, 0.06);
+}
+
+.beat-stat-card {
+  border-radius: 1rem;
+  padding: 1.25rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--beat-primary) 0%, var(--beat-primary-light) 100%);
+}
+.beat-stat-card.accent {
+  background: linear-gradient(135deg, var(--beat-accent-dark) 0%, var(--beat-accent) 100%);
+  color: #ffffff;
+}
+.beat-stat-card .stat-label {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.beat-stat-card .stat-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+
+.beat-login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #2c4262 0%, var(--beat-sidebar) 65%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.beat-product-card {
+  border: 1px solid var(--beat-border);
+  border-radius: 0.75rem;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+.beat-product-card:hover {
+  box-shadow: 0 6px 18px rgba(20, 29, 46, 0.15);
+  transform: translateY(-2px);
+}
+
+.beat-cart-item + .beat-cart-item {
+  border-top: 1px solid var(--beat-border);
+}
+
+.table thead {
+  background-color: #eef0f4;
+}
+
+.spinner-beat {
+  color: var(--beat-primary);
+}

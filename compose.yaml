@@ -1,0 +1,115 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: beatstore-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: beatstore
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - beatstore-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: beatstore-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - beatstore-network
+
+  inventory-api:
+    build:
+      context: ./services/inventory-api
+    container_name: beatstore-inventory-api
+    restart: unless-stopped
+    environment:
+      APP_NAME: BeatStore Inventory API
+      APP_VERSION: 1.0.0
+      APP_ENV: development
+      HOST: 0.0.0.0
+      PORT: 8001
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DATABASE: beatstore_inventory
+      PYTHONPATH: /app
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./services/inventory-api:/app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - beatstore-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/api/health/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  main-api:
+    build:
+      context: ./services/main-api
+    container_name: beatstore-main-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      APP_NAME: BeatStore Main API
+      PORT: 3000
+      API_PREFIX: api
+      API_VERSION: "1"
+      CORS_ORIGINS: http://localhost:5173
+      INVENTORY_API_BASE_URL: http://inventory-api:8001
+      INVENTORY_API_TIMEOUT_MS: 5000
+      INVENTORY_API_RETRY_COUNT: 2
+      MONGODB_URI: mongodb://mongodb:27017/beatstore
+      JWT_SECRET: change_this_value_before_deploy
+      JWT_EXPIRES_IN: 8h
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      inventory-api:
+        condition: service_started
+    networks:
+      - beatstore-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: beatstore-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3000/api/v1
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - main-api
+    networks:
+      - beatstore-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  beatstore-network:
+    driver: bridge
