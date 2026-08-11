@@ -8,8 +8,8 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState<LoginCredentials>({
-    usuario: '',
-    password_hash: '',
+    email: '',
+    password: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     e.preventDefault();
     setError(null);
 
-    if (!formData.usuario.trim() || !formData.password_hash.trim()) {
+    if (!formData.email.trim() || !formData.password.trim()) {
       setError('Por favor completa todos los campos.');
       return;
     }
@@ -33,8 +33,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     try {
       setLoading(true);
       const res = await authService.login(formData);
-      localStorage.setItem('token', res.token);
-      localStorage.setItem('user', JSON.stringify(res.usuario));
+      localStorage.setItem('token', res.accessToken);
+      localStorage.setItem('user', JSON.stringify(res.user));
       if (onSuccess) onSuccess();
     } catch (err: any) {
       const message = err.response?.data?.message || 'Error al iniciar sesión. Verifique sus credenciales.';
@@ -65,7 +65,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="usuario" className="form-label fw-semibold">
+              <label htmlFor="email" className="form-label fw-semibold">
                 Usuario
               </label>
               <div className="input-group">
@@ -75,10 +75,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 <input
                   type="text"
                   className="form-control border-start-0 ps-0"
-                  id="usuario"
-                  name="usuario"
+                  id="email"
+                  name="email"
                   placeholder="Ej. juan_perez"
-                  value={formData.usuario}
+                  value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
                   required
@@ -87,7 +87,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="password_hash" className="form-label fw-semibold">
+              <label htmlFor="password" className="form-label fw-semibold">
                 Contraseña
               </label>
               <div className="input-group">
@@ -97,10 +97,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 <input
                   type="password"
                   className="form-control border-start-0 ps-0"
-                  id="password_hash"
-                  name="password_hash"
+                  id="password"
+                  name="password"
                   placeholder="********"
-                  value={formData.password_hash}
+                  value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
                   required
