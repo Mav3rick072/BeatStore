@@ -59,14 +59,21 @@ export class InventoryApiClient {
 
       // Errores de negocio del inventory-api (404, 409, 422) se reenvían tal cual
       if (axiosError.response) {
+        const rawData = axiosError.response.data;
+        const isPlainObject =
+        rawData !== null &&
+        typeof rawData === 'object' &&
+        !Array.isArray(rawData);
+
+        const safeBody = isPlainObject
+        ? rawData
+        : { message: 'Inventory API devolvió una respuesta inesperada' };
+        
+        const logSnippet = JSON.stringify(safeBody).slice(0, 300);
         this.logger.warn(
-          `Inventory API respondió ${axiosError.response.status} en ${path}: ` +
-            JSON.stringify(axiosError.response.data),
+          `Inventory API respondió ${axiosError.response.status} en ${path}: ${logSnippet}`,
         );
-        throw new HttpException(
-          axiosError.response.data ?? { message: axiosError.message },
-          axiosError.response.status,
-        );
+        throw new HttpException(safeBody, axiosError.response.status);
       }
 
       this.logger.error(`Inventory API is unavailable: ${axiosError.message}`);
