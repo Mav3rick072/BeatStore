@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import {
+  HttpException,
   Injectable,
   Logger,
   ServiceUnavailableException,
@@ -62,7 +63,10 @@ export class InventoryApiClient {
           `Inventory API respondió ${axiosError.response.status} en ${path}: ` +
             JSON.stringify(axiosError.response.data),
         );
-        throw axiosError;
+        throw new HttpException(
+          axiosError.response.data ?? { message: axiosError.message },
+          axiosError.response.status,
+        );
       }
 
       this.logger.error(`Inventory API is unavailable: ${axiosError.message}`);
