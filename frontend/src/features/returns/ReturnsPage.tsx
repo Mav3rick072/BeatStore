@@ -8,11 +8,27 @@ import { extractErrorMessage } from '../../utils/errors';
 import type { SaleReturn } from '../../types/domain.types';
 import type { Sale } from '../../types/sales.types';
 
+// Una venta es elegible para devolución si tiene al menos un artículo
+// con cantidad disponible por devolver (vendido - ya devuelto > 0).
+const hasReturnableItems = (sale: Sale) =>
+  Array.isArray(sale.items) &&
+  sale.items.some((item) => item.quantity - item.returnedQuantity > 0);
+
+const saleOptionLabel = (sale: Sale) => {
+  const date = new Date(sale.createdAt).toLocaleDateString('es-MX');
+  const folio = sale.id.slice(-8);
+  return `${date} · #${folio} · ${formatCentsToMXN(sale.totalInCents)}`;
+};
+
 export const ReturnsPage: React.FC = () => {
   const [returns, setReturns] = useState<SaleReturn[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  const [eligibleSales, setEligibleSales] = useState<Sale[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+
   const [saleId, setSaleId] = useState('');
   const [sale, setSale] = useState<Sale | null>(null);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -29,16 +45,24 @@ export const ReturnsPage: React.FC = () => {
 
   useEffect(load, []);
 
-  const handleLoadSale = async () => {
+  // Carga la lista de ventas disponibles para devolución al abrir el formulario.
+  useEffect(() => {
+    if (!showForm) return;
+    setSalesLoading(true);
     setError(null);
-    try {
-      const found = await salesService.findOne(saleId.trim());
-      setSale(found);
-      setQuantities({});
-    } catch (err) {
-      setError(extractErrorMessage(err, 'No se encontró la venta'));
-      setSale(null);
-    }
+    salesService
+      .findAll()
+      .then((all) => setEligibleSales(all.filter(hasReturnableItems)))
+      .catch((err) => setError(extractErrorMessage(err, 'No se pudieron cargar las ventas')))
+      .finally(() => setSalesLoading(false));
+  }, [showForm]);
+
+  const handleSelectSale = (id: string) => {
+    setSaleId(id);
+    setError(null);
+    const found = eligibleSales.find((s) => s.id === id) ?? null;
+    setSale(found);
+    setQuantities({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,19 +109,31 @@ export const ReturnsPage: React.FC = () => {
 
       {showForm && (
         <div className="beat-card p-4 mb-4">
-          <div className="input-group mb-3" style={{ maxWidth: 480 }}>
-            <input
-              className="form-control"
-              placeholder="ID de la venta"
-              value={saleId}
-              onChange={(e) => setSaleId(e.target.value)}
-            />
-            <button className="btn btn-outline-primary" type="button" onClick={handleLoadSale}>
-              Buscar venta
-            </button>
-          </div>
+          <label className="form-label">Selecciona la venta</label>
+          <select
+            className="form-select mb-3"
+            style={{ maxWidth: 480 }}
+            value={saleId}
+            disabled={salesLoading}
+            onChange={(e) => handleSelectSale(e.target.value)}
+          >
+            <option value="">
+              {salesLoading ? 'Cargando ventas...' : 'Elige una venta...'}
+            </option>
+            {eligibleSales.map((s) => (
+              <option key={s.id} value={s.id}>
+                {saleOptionLabel(s)}
+              </option>
+            ))}
+          </select>
 
-          {sale && (
+          {!salesLoading && eligibleSales.length === 0 && (
+            <p className="text-muted small">
+              No hay ventas con artículos disponibles para devolver.
+            </p>
+          )}
+
+          {sale && Array.isArray(sale.items) && (
             <form onSubmit={handleSubmit}>
               <table className="table">
                 <thead>
